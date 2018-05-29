@@ -125,22 +125,6 @@ namespace TrtlBotSharp
             return 0;
         }
 
-        // Gets a user's redirect preference from the database
-        public static bool GetRedirect(ulong UID)
-        {
-            // Create SQL command
-            SQLiteCommand Command = new SQLiteCommand("SELECT redirect FROM users WHERE uid = @uid", Database);
-            Command.Parameters.AddWithValue("uid", UID);
-
-            // Execute command
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
-                if (Reader.Read())
-                    return Reader.GetBoolean(0);
-
-            // Could not find uid
-            return false;
-        }
-
         // Sets a user's balance in the database
         public static void SetBalance(ulong UID, decimal Balance)
         {
@@ -195,6 +179,34 @@ namespace TrtlBotSharp
 
             // Could not find payment id
             return 0;
+        }
+
+        // Gets a user's redirect preference from the database
+        public static bool GetRedirect(ulong UID)
+        {
+            // Create SQL command
+            SQLiteCommand Command = new SQLiteCommand("SELECT redirect FROM users WHERE uid = @uid", Database);
+            Command.Parameters.AddWithValue("uid", UID);
+
+            // Execute command
+            using (SQLiteDataReader Reader = Command.ExecuteReader())
+                if (Reader.Read())
+                    return Reader.GetBoolean(0);
+
+            // Could not find uid
+            return false;
+        }
+
+        // Sets a user's redirect preferemce in the database
+        public static void SetRedirect(ulong UID, bool Redirect)
+        {
+            // Create SQL command
+            SQLiteCommand Command = new SQLiteCommand("UPDATE users SET redirect = @redirect WHERE uid = @uid", Database);
+            Command.Parameters.AddWithValue("uid", UID);
+            Command.Parameters.AddWithValue("redirect", Redirect);
+
+            // Execute command
+            Command.ExecuteNonQuery();
         }
 
         // Adds a tip to user's stats

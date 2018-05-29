@@ -31,9 +31,14 @@ namespace TrtlBotSharp
                 // Register wallet into database
                 string PaymentId = TrtlBotSharp.RegisterWallet(Context.Message.Author.Id, Address);
 
+                // Begin building a response
+                var Response = new EmbedBuilder();
+                Response.WithTitle("Successfully registered your wallet!");
+                Response.Description = string.Format("Deposit {0} to start tipping!\n\n" +
+                    "Address:\n**{1}**\n\nPayment ID:\n**{2}**", TrtlBotSharp.coinSymbol, TrtlBotSharp.tipDefaultAddress, PaymentId);
+
                 // Send reply
-                await Context.Message.Author.SendMessageAsync(string.Format("**Successfully registered your wallet!**\nDeposit {0} to start tipping!" +
-                    "```Address:\n{1}\n\nPayment ID:\n{2}```", TrtlBotSharp.coinSymbol, TrtlBotSharp.tipDefaultAddress, PaymentId));
+                await Context.Message.Author.SendMessageAsync("", false, Response);
             }
         }
 
@@ -63,6 +68,50 @@ namespace TrtlBotSharp
 
                 // Reply with success
                 await Context.Message.Author.SendMessageAsync("Successfully updated your wallet");
+            }
+        }
+
+        [Command("redirecttips")]
+        public async Task RedirectTipsAsync([Remainder]string Remainder = "")
+        {
+            // Check that user has registered an address
+            if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
+                await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can recieve tips! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
+
+            // User is registered
+            else
+            {
+                // Check if user is redirecting tips
+                bool Redirect = TrtlBotSharp.GetRedirect(Context.Message.Author.Id);
+
+                // Set new value
+                if (Redirect) Redirect = false;
+                else Redirect = true;
+
+                // Set redirect preference
+                TrtlBotSharp.SetRedirect(Context.Message.Author.Id, Redirect);
+
+                // Send reply
+                if (Redirect) await Context.Message.Author.SendMessageAsync("**Tip redirect preference changed**\nTips you receive will now go to your tip jar");
+                else await Context.Message.Author.SendMessageAsync("**Tip redirect preference changed**\nTips you receive will now go to your registered wallet");
+            }
+        }
+        [Command("redirecttips")]
+        public async Task RedirectTipsAsync(bool Redirect, [Remainder]string Remainder = "")
+        {
+            // Check that user has registered an address
+            if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
+                await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can recieve tips! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
+
+            // User is registered
+            else
+            {
+                // Set redirect preference
+                TrtlBotSharp.SetRedirect(Context.Message.Author.Id, Redirect);
+
+                // Send reply
+                if (Redirect) await Context.Message.Author.SendMessageAsync("**Tip redirect preference changed**\nTips you receive will now go to your tip jar");
+                else await Context.Message.Author.SendMessageAsync("**Tip redirect preference changed**\nTips you receive will now go to your registered wallet");
             }
         }
 
@@ -193,7 +242,6 @@ namespace TrtlBotSharp
             string Address = "";
             if (Remainder.StartsWith(TrtlBotSharp.coinAddressPrefix) && Remainder.Length == TrtlBotSharp.coinAddressLength)
                 Address = Remainder.Substring(0, 99);
-            Console.WriteLine("Address: " + Address);
 
             // Check that there is at least one mentioned user
             if (Address == "" && Context.Message.MentionedUsers.Count < 1) return;
@@ -232,11 +280,28 @@ namespace TrtlBotSharp
                 if (Address == "")
                 {
                     // Send a failed react if a user isn't found
-                    foreach (ulong User in TippableUsers)
+                    bool FailReactAdded = false;
+                    foreach (ulong User in Users)
                         if (!TrtlBotSharp.CheckUserExists(User))
                         {
-                            await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipFailedReact));
-                            break;
+                            if (!FailReactAdded)
+                            {
+                                await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipFailedReact));
+                                FailReactAdded = true;
+                            }
+
+                            try {
+                                // Begin building a response
+                                var Response = new EmbedBuilder();
+                                Response.WithTitle(string.Format("{0} wants to tip you!", Context.Message.Author.Username));
+                                Response.Description = string.Format("Register your wallet with with `{0}registerwallet <your {1} address>` " +
+                                    "to get started!\nTo create a wallet head to https://turtlecoin.lol/wallet/\nExtra Help: http://docs.turtlecoin.lol/",
+                                    TrtlBotSharp.botPrefix, TrtlBotSharp.coinSymbol);
+
+                                // Send reply
+                                await Context.Client.GetUser(User).SendMessageAsync("", false, Response);
+                            }
+                            catch { }
                         }
 
                     // Check that there is at least one user with a registered wallet
