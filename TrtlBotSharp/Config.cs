@@ -20,6 +20,7 @@ namespace TrtlBotSharp
                 logLevel = (int)Config["logLevel"];
                 botToken = (string)Config["botToken"];
                 botPrefix = (string)Config["botPrefix"];
+                botMessageCache = (int)Config["botMessageCache"];
                 coinName = (string)Config["coinName"];
                 coinSymbol = (string)Config["coinSymbol"];
                 coinUnits = (decimal)Config["coinUnits"];
@@ -29,6 +30,7 @@ namespace TrtlBotSharp
                 tipFailedReact = (string)Config["tipFailedReact"];
                 tipLowBalanceReact = (string)Config["tipLowBalanceReact"];
                 tipJoinReact = (string)Config["tipJoinReact"];
+                tipCustomReacts = Config["tipCustomReacts"].ToObject<Dictionary<string, decimal>>();
                 faucetHost = (string)Config["faucetHost"];
                 faucetEndpoint = (string)Config["faucetEndpoint"];
                 faucetAddress = (string)Config["faucetAddress"];
@@ -55,6 +57,7 @@ namespace TrtlBotSharp
                 ["logLevel"] = logLevel,
                 ["botToken"] = botToken,
                 ["botPrefix"] = botPrefix,
+                ["botMessageCache"] = botMessageCache,
                 ["coinName"] = coinName,
                 ["coinSymbol"] = coinSymbol,
                 ["coinUnits"] = coinUnits,
@@ -64,6 +67,7 @@ namespace TrtlBotSharp
                 ["tipFailedReact"] = tipFailedReact,
                 ["tipLowBalanceReact"] = tipLowBalanceReact,
                 ["tipJoinReact"] = tipJoinReact,
+                ["tipCustomReacts"] = JToken.FromObject(tipCustomReacts),
                 ["faucetHost"] = faucetHost,
                 ["faucetEndpoint"] = faucetEndpoint,
                 ["faucetAddress"] = faucetAddress,

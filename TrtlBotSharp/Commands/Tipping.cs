@@ -282,7 +282,7 @@ namespace TrtlBotSharp
                     // Send a failed react if a user isn't found
                     bool FailReactAdded = false;
                     foreach (ulong User in Users)
-                        if (!TrtlBotSharp.CheckUserExists(User))
+                        if (!TippableUsers.Contains(User))
                         {
                             if (!FailReactAdded)
                             {

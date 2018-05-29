@@ -34,6 +34,8 @@ namespace TrtlBotSharp
         public static string
             botToken = "0",
             botPrefix = ".";
+        public static int
+            botMessageCache = 0;
 
         // Currency Variables
         public static string
@@ -58,6 +60,8 @@ namespace TrtlBotSharp
             tipJoinReact = "tip";
         public static List<string>
             tipAddresses = new List<string>();
+        public static Dictionary<string, decimal>
+            tipCustomReacts = new Dictionary<string, decimal>();
 
         // Faucet Variables
         public static string
