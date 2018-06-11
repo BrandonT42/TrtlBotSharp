@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrtlBotSharp", "TrtlBotSharp\TrtlBotSharp.csproj", "{CAF6BED6-FC1B-4D16-AFF7-7AAB86D97ED8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "..\DatabaseMigration\DatabaseMigration\DatabaseMigration.csproj", "{00A28300-589F-49C5-B477-607ED810EBF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "DatabaseMigration\DatabaseMigration.csproj", "{86F33AF9-937F-4E72-BE95-11654E3D5EDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{CAF6BED6-FC1B-4D16-AFF7-7AAB86D97ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAF6BED6-FC1B-4D16-AFF7-7AAB86D97ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAF6BED6-FC1B-4D16-AFF7-7AAB86D97ED8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00A28300-589F-49C5-B477-607ED810EBF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00A28300-589F-49C5-B477-607ED810EBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00A28300-589F-49C5-B477-607ED810EBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00A28300-589F-49C5-B477-607ED810EBF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86F33AF9-937F-4E72-BE95-11654E3D5EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86F33AF9-937F-4E72-BE95-11654E3D5EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86F33AF9-937F-4E72-BE95-11654E3D5EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86F33AF9-937F-4E72-BE95-11654E3D5EDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

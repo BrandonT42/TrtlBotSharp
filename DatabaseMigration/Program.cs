@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.IO;
 
 namespace DatabaseMigration
@@ -48,15 +48,6 @@ namespace DatabaseMigration
             OldDB = args[0];
             NewDB = args[1];
 
-            // Create new database file
-            if (!File.Exists(NewDB)) SQLiteConnection.CreateFile(NewDB);
-            else
-            {
-                Console.WriteLine("Error: New database file already exists in the specified location\nPress any key to exit");
-                Console.ReadKey();
-                return;
-            }
-
             // Create user cache
             Users = new Dictionary<ulong, User>();
 
@@ -64,13 +55,13 @@ namespace DatabaseMigration
             Transactions = new Dictionary<string, Transaction>();
 
             // Load original database
-            using (SQLiteConnection DB = new SQLiteConnection("Data Source=" + OldDB + ";"))
+            using (SqliteConnection DB = new SqliteConnection("Data Source=" + OldDB + ";"))
             {
                 // Open a connection
                 DB.Open();
 
                 // Get user addresses
-                SQLiteCommand WalletsTable = DB.CreateCommand();
+                SqliteCommand WalletsTable = DB.CreateCommand();
                 WalletsTable.CommandText = "SELECT userid, address FROM wallets";
                 using (var ReaderOne = WalletsTable.ExecuteReader())
                 {
@@ -87,7 +78,7 @@ namespace DatabaseMigration
                         Users.Add(UserId, new User(Address));
 
                         // Get tip jar information
-                        SQLiteCommand TipsTable = DB.CreateCommand();
+                        SqliteCommand TipsTable = DB.CreateCommand();
                         TipsTable.CommandText = "SELECT paymentid, amount FROM tips WHERE userid = @userid";
                         TipsTable.Parameters.AddWithValue("userid", UserId);
 
@@ -113,7 +104,7 @@ namespace DatabaseMigration
                 }
 
                 // Get transactions
-                SQLiteCommand TransactionsTable = DB.CreateCommand();
+                SqliteCommand TransactionsTable = DB.CreateCommand();
                 WalletsTable.CommandText = "SELECT tx, paymentid, amount FROM transactions";
                 using (var ReaderOne = WalletsTable.ExecuteReader())
                 {
@@ -140,36 +131,36 @@ namespace DatabaseMigration
             }
 
             // Load new database
-            using (SQLiteConnection DB = new SQLiteConnection("Data Source=" + NewDB + ";"))
+            using (SqliteConnection DB = new SqliteConnection("Data Source=" + NewDB + ";"))
             {
                 // Open a connections
                 DB.Open();
 
                 // Attempt to create users table
-                SQLiteCommand UsersTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS users (uid INT, address TEXT, " +
+                SqliteCommand UsersTableCreationCommand = new SqliteCommand("CREATE TABLE IF NOT EXISTS users (uid INT, address TEXT, " +
                     "paymentid VARCHAR(64), balance BIGINT DEFAULT 0, tipssent INT DEFAULT 0, tipsrecv INT DEFAULT 0, coinssent BIGINT " +
                     "DEFAULT 0, coinsrecv BIGINT DEFAULT 0, redirect BOOLEAN DEFAULT 0)", DB);
                 UsersTableCreationCommand.ExecuteNonQuery();
 
                 // Attempt to create transactions table
-                SQLiteCommand TransactionsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS transactions " +
+                SqliteCommand TransactionsTableCreationCommand = new SqliteCommand("CREATE TABLE IF NOT EXISTS transactions " +
                     "(createdat TIMESTAMP, type TINYTEXT, amount BIGINT, paymentid VARCHAR(64), tx TEXT)", DB);
                 TransactionsTableCreationCommand.ExecuteNonQuery();
 
                 // Attempt to create tips (stats) table
-                SQLiteCommand TipsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS tips (createdat TIMESTAMP, " +
+                SqliteCommand TipsTableCreationCommand = new SqliteCommand("CREATE TABLE IF NOT EXISTS tips (createdat TIMESTAMP, " +
                     "type TINYTEXT, serverid INT, channelid INT, userid INT, amount BIGINT, recipients INT, totalamount BIGINT)", DB);
                 TipsTableCreationCommand.ExecuteNonQuery();
 
                 // Attempt to create pending tips table
-                SQLiteCommand PendingTipsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS pendingtips (tx TEXT, " +
+                SqliteCommand PendingTipsTableCreationCommand = new SqliteCommand("CREATE TABLE IF NOT EXISTS pendingtips (tx TEXT, " +
                     "paymentid VARCHAR(64), amount BIGINT DEFAULT 0)", DB);
                 PendingTipsTableCreationCommand.ExecuteNonQuery();
 
                 // Attempt to create sync table
-                SQLiteCommand SyncTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS sync (height INT DEFAULT 1)", DB);
+                SqliteCommand SyncTableCreationCommand = new SqliteCommand("CREATE TABLE IF NOT EXISTS sync (height INT DEFAULT 1)", DB);
                 SyncTableCreationCommand.ExecuteNonQuery();
-                SQLiteCommand SyncTableDefaultCommand = new SQLiteCommand("INSERT INTO sync(height) SELECT 1 WHERE NOT EXISTS(SELECT 1 " +
+                SqliteCommand SyncTableDefaultCommand = new SqliteCommand("INSERT INTO sync(height) SELECT 1 WHERE NOT EXISTS(SELECT 1 " +
                     "FROM sync WHERE height > 0)", DB);
                 SyncTableDefaultCommand.ExecuteNonQuery();
 
@@ -177,7 +168,7 @@ namespace DatabaseMigration
                 foreach (KeyValuePair<ulong, User> User in Users)
                 {
                     // Add user to users table
-                    SQLiteCommand Command = new SQLiteCommand("INSERT INTO users (uid, address, paymentid, balance) VALUES (@uid, @address, " +
+                    SqliteCommand Command = new SqliteCommand("INSERT INTO users (uid, address, paymentid, balance) VALUES (@uid, @address, " +
                         "@paymentid, @balance)", DB);
                     Command.Parameters.AddWithValue("uid", User.Key);
                     Command.Parameters.AddWithValue("address", User.Value.Address);
@@ -194,7 +185,7 @@ namespace DatabaseMigration
                 foreach (KeyValuePair<string, Transaction> Transaction in Transactions)
                 {
                     // Add user to users table
-                    SQLiteCommand Command = new SQLiteCommand("INSERT INTO transactions (createdat, type, tx, paymentid, amount) VALUES " +
+                    SqliteCommand Command = new SqliteCommand("INSERT INTO transactions (createdat, type, tx, paymentid, amount) VALUES " +
                         "(@createdat, @type, @tx, @paymentid, @amount)", DB);
                     Command.Parameters.AddWithValue("createdat", 0);
                     Command.Parameters.AddWithValue("type", "DB_MIGRATION");
