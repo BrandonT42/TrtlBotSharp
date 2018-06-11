@@ -29,7 +29,7 @@ namespace TrtlBotSharp
                 Difficulty = (decimal)Result["block_header"]["difficulty"];
 
             // Send reply
-            await ReplyAsync(string.Format("The current difficulty is **{0:N0}**", Difficulty));
+            await ReplyAsync(string.Format("The current difficulty is **{0:N20}**", Difficulty));
         }
 
         [Command("height")]
@@ -43,7 +43,7 @@ namespace TrtlBotSharp
 
 
             // Send reply
-            await ReplyAsync(string.Format("The current block height is **{0:N0}**", Height));
+            await ReplyAsync(string.Format("The current block height is **{0:N20}**", Height));
         }
 
         [Command("supply")]
@@ -53,7 +53,7 @@ namespace TrtlBotSharp
             decimal Supply = TrtlBotSharp.GetSupply();
 
             // Send reply
-            await ReplyAsync(string.Format("The current circulating supply is **{0:N}** {1}", Supply, TrtlBotSharp.coinSymbol));
+            await ReplyAsync(string.Format("The current circulating supply is **{0:N2}** {1}", Supply, TrtlBotSharp.coinSymbol));
         }
     }
 }
