@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace TrtlBotSharp
         public static Dictionary<string, JObject> UnconfirmedTransactions = new Dictionary<string, JObject>();
 
         // Sends a tip to a list of users
-        public static bool Tip(ulong Sender, List<ulong> Recipients, decimal Amount)
+        public static bool Tip(ulong Sender, List<ulong> Recipients, decimal Amount, IMessage Message)
         {
             // Create transfer list
             JArray Transfers = new JArray();
@@ -52,11 +53,11 @@ namespace TrtlBotSharp
                 foreach (ulong UID in Recipients)
                 {
                     // Update stats
-                    TipStats(Sender, UID, Amount);
+                    UserStats(Sender, UID, Amount);
 
                     // Begin building a message
-                    var Message = new EmbedBuilder();
-                    Message.WithTitle("Tip received!");
+                    var ReplyEmbed = new EmbedBuilder();
+                    ReplyEmbed.WithTitle("Tip received!");
 
                     // Update redirected funds
                     if (GetRedirect(UID))
@@ -68,15 +69,15 @@ namespace TrtlBotSharp
                         AddPending(TransactionHash, GetPaymentId(UID), Amount);
 
                         // Set response message
-                        Message.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}, since you are redirecting tips back to " +
+                        ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}, since you are redirecting tips back to " +
                             "your tip jar, this will come through as a deposit once confirmed.\nTX: **{3}**", Amount, coinSymbol,
                             _client.GetUser(Sender).Username, TransactionHash);
                     }
-                    else Message.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}!\nTX: **{3}**", Amount, coinSymbol,
+                    else ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}!\nTX: **{3}**", Amount, coinSymbol,
                         _client.GetUser(Sender).Username, TransactionHash);
 
                     // Send message
-                    _client.GetUser(UID).SendMessageAsync("", false, Message);
+                    _client.GetUser(UID).SendMessageAsync("", false, ReplyEmbed);
                 }
 
                 // Begin building a message
@@ -90,6 +91,17 @@ namespace TrtlBotSharp
 
                 // Send message
                 _client.GetUser(Sender).SendMessageAsync("", false, Response);
+
+                // Update global stats
+                ulong ServerId = 0;
+                ulong ChannelId = 0;
+                if (Message.Channel != null)
+                {
+                    ChannelId = Message.Channel.Id;
+                    if ((Message.Channel as SocketGuildChannel).Guild != null)
+                        ServerId = (Message.Channel as SocketGuildChannel).Guild.Id;
+                }
+                GlobalStats("OUT", ServerId, ChannelId, Sender, Amount, Recipients.Count);
 
                 // Return as successful
                 return true;
@@ -334,6 +346,10 @@ namespace TrtlBotSharp
                                 // Send message
                                 try { await _client.GetUser(GetUserId(PaymentId)).SendMessageAsync("", false, Response); }
                                 catch { }
+
+                                // Update global stats
+                                try { GlobalStats("IN", 0, 0, GetUserId(PaymentId), Difference, 1); }
+                                catch { }
                             }
 
                             // Update user balance
@@ -372,6 +388,10 @@ namespace TrtlBotSharp
 
                                 // Send message
                                 try { await _client.GetUser(GetUserId(PID)).SendMessageAsync("", false, Response); }
+                                catch { }
+
+                                // Update global stats
+                                try { GlobalStats("IN", 0, 0, GetUserId(PID), Pending, 1); }
                                 catch { }
                             }
 

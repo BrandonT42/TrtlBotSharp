@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace TrtlBotSharp
                 SQLiteConnection.CreateFile(databaseFile);
 
             // Load database
-            Database = new SQLiteConnection("Data Source=" + databaseFile + ";Version=3;");
+            Database = new SQLiteConnection("Data Source=" + databaseFile);// + ";Version=3;");
             Database.Open();
 
             // Attempt to create users table
@@ -31,6 +30,11 @@ namespace TrtlBotSharp
             SQLiteCommand TransactionsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS transactions (createdat TIMESTAMP, type TINYTEXT, amount BIGINT, paymentid VARCHAR(64), " +
                 "tx TEXT)", Database);
             TransactionsTableCreationCommand.ExecuteNonQuery();
+
+            // Attempt to create tips (stats) table
+            SQLiteCommand TipsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS tips (createdat TIMESTAMP, type TINYTEXT, serverid INT, channelid INT, userid INT, " +
+                "amount BIGINT, recipients INT, totalamount BIGINT)", Database);
+            TipsTableCreationCommand.ExecuteNonQuery();
 
             // Attempt to create pending tips table
             SQLiteCommand PendingTipsTableCreationCommand = new SQLiteCommand("CREATE TABLE IF NOT EXISTS pendingtips (tx TEXT, paymentid VARCHAR(64), amount BIGINT DEFAULT 0)", Database);

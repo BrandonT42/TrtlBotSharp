@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Text;
+﻿using System.Data.SQLite;
 
 namespace TrtlBotSharp
 {
@@ -10,7 +7,7 @@ namespace TrtlBotSharp
         // Gets last sync height
         public static int GetSyncHeight()
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT height FROM sync", Database);
 
             // Execute command
@@ -25,7 +22,7 @@ namespace TrtlBotSharp
         // Sets last sync height
         public static void SetSyncHeight(int Height)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("UPDATE sync SET height = @height", Database);
             Command.Parameters.AddWithValue("height", Height);
 

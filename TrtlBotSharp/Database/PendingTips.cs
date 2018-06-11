@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Text;
 
 namespace TrtlBotSharp
 {
@@ -10,7 +8,7 @@ namespace TrtlBotSharp
         // Checks if a transaction is a pending tip
         public static bool CheckIfPending(string TransactionHash)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT tx FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
@@ -23,7 +21,7 @@ namespace TrtlBotSharp
         // Gets pending tip payment ids
         public static List<string> GetPendingPaymentIds(string TransactionHash)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT paymentid FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
@@ -38,7 +36,7 @@ namespace TrtlBotSharp
         // Gets pending tip amount
         public static decimal GetPendingAmount(string TransactionHash)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT amount FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
@@ -52,7 +50,7 @@ namespace TrtlBotSharp
         // Adds a pending tip to the database
         public static void AddPending(string TransactionHash, string PaymentId, decimal Amount)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("INSERT INTO pendingtips (tx, paymentid, amount) VALUES (@tx, @paymentid, @amount)", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
@@ -65,7 +63,7 @@ namespace TrtlBotSharp
         // Removes a pending tip from the database
         public static void RemovePending(string TransactionHash)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("DELETE FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 

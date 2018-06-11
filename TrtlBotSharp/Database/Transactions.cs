@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Text;
+﻿using System.Data.SQLite;
 
 namespace TrtlBotSharp
 {
@@ -10,7 +7,7 @@ namespace TrtlBotSharp
         // Checks if a transaction exists in the database
         public static bool CheckTransactionExists(string TransactionHash)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT tx FROM transactions WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
@@ -23,7 +20,7 @@ namespace TrtlBotSharp
         // Logs a transaction in the database
         public static void LogTransaction(string Timestamp, string Type, string TransactionHash, string PaymentId, decimal Amount)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("INSERT INTO transactions (createdat, type, tx, paymentid, amount) VALUES (@createdat, @type, @tx, @paymentid, @amount)", Database);
             Command.Parameters.AddWithValue("createdat", Timestamp);
             Command.Parameters.AddWithValue("type", Type);

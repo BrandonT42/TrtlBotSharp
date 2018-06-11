@@ -1,7 +1,5 @@
-﻿using Discord;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Threading.Tasks;
 
 namespace TrtlBotSharp

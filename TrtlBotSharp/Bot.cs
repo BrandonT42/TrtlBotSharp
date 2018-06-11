@@ -34,13 +34,10 @@ namespace TrtlBotSharp
             SocketConfig.MessageCacheSize = botMessageCache;
 
             // Load local files
-            if (!Disconnected)
-            {
-                Log(0, "TrtlBot", "Loading config");
-                await LoadConfig();
-                Log(0, "TrtlBot", "Loading database");
-                await LoadDatabase();
-            }
+            Log(0, "TrtlBot", "Loading config");
+            await LoadConfig();
+            Log(0, "TrtlBot", "Loading database");
+            await LoadDatabase();
 
             // Populate API variables
             _client = new DiscordSocketClient(SocketConfig);
@@ -69,11 +66,16 @@ namespace TrtlBotSharp
             while (!Disconnected) { }
         }
 
+        private static bool Monitoring = false;
         private static Task Ready()
         {
             // Begin wallet monitoring once gateway reports as ready
-            Log(0, "TrtlBot", "Starting wallet monitor");
-            BeginMonitoring();
+            if (!Monitoring)
+            {
+                Log(0, "TrtlBot", "Starting wallet monitor");
+                BeginMonitoring();
+                Monitoring = true;
+            }
             return Task.CompletedTask;
         }
 
@@ -97,11 +99,7 @@ namespace TrtlBotSharp
 
             // Restart if disconnected
             if (arg.Message.Contains("Disconnected"))
-            {
                 Log(0, "TrtlBot", "Restarting bot...");
-                Disconnected = true;
-                RunBotAsync();
-            }
 
             // Completed
             return Task.CompletedTask;
@@ -129,7 +127,6 @@ namespace TrtlBotSharp
         private static async Task ReactionAddedAsync(Cacheable<IUserMessage, ulong> CacheableMessage, ISocketMessageChannel Channel, SocketReaction Reaction)
         {
             // Get reaction data
-            //SocketUserMessage Message = Channel.GetMessageAsync(Reaction.MessageId).Result as SocketUserMessage;
             IUserMessage Message = await CacheableMessage.GetOrDownloadAsync();
 
             // Ignore own reactions
@@ -159,13 +156,10 @@ namespace TrtlBotSharp
                     return;
                 }
 
-                // Check that there is at least one mentioned user
-                if (Message.MentionedUserIds.Count < 1) return;
-
                 // Remove duplicate mentions
                 List<ulong> Users = new List<ulong>();
                 foreach (ulong User in Message.MentionedUserIds)
-                    Users.Add(User);
+                    if (User != Reaction.UserId) Users.Add(User);
                 Users = Users.Distinct().ToList();
 
                 // Create a list of users that have wallets
@@ -176,28 +170,21 @@ namespace TrtlBotSharp
                         TippableUsers.Add(Id);
                 }
 
+                // Check that there are users to tip
+                if (TippableUsers.Count < 1) return;
+
                 // Check that user has enough balance for the tip
                 if (GetBalance(Reaction.UserId) < Convert.ToDecimal(Amount) * TippableUsers.Count + tipFee)
                 {
                     await Reaction.User.Value.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
                         Convert.ToDecimal(Amount) * TippableUsers.Count + tipFee, coinSymbol));
                     await Message.AddReactionAsync(new Emoji(tipLowBalanceReact));
+                    return;
                 }
 
-                // Tip has required arguments
-                else
-                {
-                    // Send a failed react if a user isn't found
-                    if (TippableUsers.Count < Users.Count)
-                        await Message.AddReactionAsync(new Emoji(tipFailedReact));
-
-                    // Check that there is at least one user with a registered wallet
-                    if (TippableUsers.Count > 0 && Tip(Reaction.UserId, TippableUsers, Convert.ToDecimal(Amount)))
-                    {
-                        // Send success react
-                        await Message.AddReactionAsync(new Emoji(tipSuccessReact));
-                    }
-                }
+                // Check that there is at least one user with a registered wallet
+                if (Tip(Reaction.UserId, TippableUsers, Convert.ToDecimal(Amount), Message as SocketMessage))
+                    await Message.AddReactionAsync(new Emoji(tipSuccessReact));
             }
 
             // Custom reacts
@@ -212,6 +199,10 @@ namespace TrtlBotSharp
                     await Reaction.User.Value.SendMessageAsync(string.Format("You must register a wallet before you can tip! Use {0}help if you need any help.", botPrefix));
                     return;
                 }
+
+                // Check if user is trying to tip themself
+                if (Message.Author.Id == Reaction.UserId)
+                    return;
 
                 // Check that recipient has registered a wallet
                 if (!CheckUserExists(Message.Author.Id))
@@ -244,14 +235,10 @@ namespace TrtlBotSharp
                 }
 
                 // Tip has required arguments
-                else
+                else if (Tip(Reaction.UserId, new List<ulong> { Message.Author.Id }, Amount, Message))
                 {
-                    // Check that there is at least one user with a registered wallet
-                    if (Tip(Reaction.UserId, new List<ulong> { Message.Author.Id }, Amount))
-                    {
-                        // Send success react
-                        await Message.AddReactionAsync(new Emoji(tipSuccessReact));
-                    }
+                    // Send success react
+                    await Message.AddReactionAsync(new Emoji(tipSuccessReact));
                 }
             }
         }

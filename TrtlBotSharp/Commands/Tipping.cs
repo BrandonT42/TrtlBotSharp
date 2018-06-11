@@ -13,6 +13,10 @@ namespace TrtlBotSharp
         [Command("registerwallet")]
         public async Task RegisterWalletAsync(string Address, [Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check that user hasn't already registered an address
             if (TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
                 await Context.Message.Author.SendMessageAsync(string.Format("You have already registered an address, use {0}updatewallet if you'd like to update it", TrtlBotSharp.botPrefix));
@@ -45,6 +49,10 @@ namespace TrtlBotSharp
         [Command("updatewallet")]
         public async Task UpdateWalletAsync(string Address, [Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check that user has registered an address, register it if not.
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
             {
@@ -74,6 +82,10 @@ namespace TrtlBotSharp
         [Command("redirecttips")]
         public async Task RedirectTipsAsync([Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check that user has registered an address
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
                 await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can recieve tips! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
@@ -99,6 +111,10 @@ namespace TrtlBotSharp
         [Command("redirecttips")]
         public async Task RedirectTipsAsync(bool Redirect, [Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check that user has registered an address
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
                 await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can recieve tips! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
@@ -115,17 +131,41 @@ namespace TrtlBotSharp
             }
         }
 
-        [Command("wallet")] // Get by mention
-        public async Task WalletAsync(SocketGuildUser User = null, [Remainder]string Remainder = "")
+        [Command("wallet")] // Get own wallet
+        public async Task WalletAsync([Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Try to grab address from the database
             string Address = "";
-            if (User != null) Address = TrtlBotSharp.GetAddress(User.Id);
-            else Address = TrtlBotSharp.GetAddress(Context.Message.Author.Id);
+            if (TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
+                Address = TrtlBotSharp.GetAddress(Context.Message.Author.Id);
 
             // Check if result is empty
-            if (Address == "")
-                await ReplyAsync(string.Format("{0} hasn't registered a wallet!", User.Username));
+            if (string.IsNullOrEmpty(Address))
+                await Context.Message.Author.SendMessageAsync(string.Format("You haven't registered a wallet! Use {0}help if you need any help.",
+                    TrtlBotSharp.botPrefix));
+
+            // Check if user is requesting their own wallet
+            else await Context.Message.Author.SendMessageAsync(string.Format("**Your wallet:**```{0}```", Address));
+        }
+        [Command("wallet")] // Get by mention
+        public async Task WalletAsync(SocketUser User, [Remainder]string Remainder = "")
+        {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
+            // Try to grab address from the database
+            string Address = "";
+            if (TrtlBotSharp.CheckUserExists(User.Id))
+                Address = TrtlBotSharp.GetAddress(User.Id);
+
+            // Check if result is empty
+            if (string.IsNullOrEmpty(Address))
+                await Context.Message.Author.SendMessageAsync(string.Format("{0} hasn't registered a wallet!", User.Username));
 
             // Check if user is requesting their own wallet
             else if (User == null || Context.Message.Author.Id == User.Id)
@@ -137,16 +177,24 @@ namespace TrtlBotSharp
         [Command("wallet")] // Get by uid
         public async Task WalletAsync(ulong UID, [Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Try to grab address from the database
-            string Address = TrtlBotSharp.GetAddress(UID);
+            string Address = "";
+            if (TrtlBotSharp.CheckUserExists(UID))
+                Address = TrtlBotSharp.GetAddress(UID);
 
             // Get requested user
-            string Username = Context.Client.GetUser(UID).Username;
-            if (Username == "") Username = UID.ToString();
+            string Username = "";
+            SocketUser User = Context.Client.GetUser(UID);
+            if (User != null) Username = User.Username;
+            if (string.IsNullOrEmpty(Username)) Username = UID.ToString();
 
             // Check if result is empty
-            if (Address == "")
-                await ReplyAsync(string.Format("{0} hasn't registered a wallet!", Username));
+            if (string.IsNullOrEmpty(Address))
+                await Context.Message.Author.SendMessageAsync(string.Format("{0} hasn't registered a wallet!", Username));
 
             // Check if user is requesting their own wallet
             else if (Context.Message.Author.Id == UID)
@@ -159,6 +207,10 @@ namespace TrtlBotSharp
         [Command("deposit")]
         public async Task DepositAsync([Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check if user exists in user table
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
                 await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can deposit! Use {0}help if you need any help.",
@@ -172,10 +224,14 @@ namespace TrtlBotSharp
         [Command("withdraw")]
         public async Task WithdrawAsync(string Amount, [Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check if user exists in user table
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
             {
-                await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can tip! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
+                await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can withdraw! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
                 return;
             }
 
@@ -205,6 +261,10 @@ namespace TrtlBotSharp
         [Command("balance")]
         public async Task BalanceAsync([Remainder]string Remainder = "")
         {
+            // Delete original message
+            try { await Context.Message.DeleteAsync(); }
+            catch { }
+
             // Check if user exists in user table
             if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
                 await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can check your tip jar balance! Use {0}help if you need any help.",
@@ -232,7 +292,7 @@ namespace TrtlBotSharp
             }
 
             // Check that amount is over the minimum fee
-            else if (Convert.ToDecimal(Amount) < TrtlBotSharp.Minimum)//TrtlBotSharp.Fee)
+            if (Convert.ToDecimal(Amount) < TrtlBotSharp.Minimum)//TrtlBotSharp.Fee)
             {
                 await ReplyAsync(string.Format("Amount must be at least {0:N} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
                 return;
@@ -282,7 +342,7 @@ namespace TrtlBotSharp
                     // Send a failed react if a user isn't found
                     bool FailReactAdded = false;
                     foreach (ulong User in Users)
-                        if (!TippableUsers.Contains(User))
+                        if (User != Context.Message.Author.Id && !TippableUsers.Contains(User))
                         {
                             if (!FailReactAdded)
                             {
@@ -305,7 +365,7 @@ namespace TrtlBotSharp
                         }
 
                     // Check that there is at least one user with a registered wallet
-                    if (TippableUsers.Count > 0 && TrtlBotSharp.Tip(Context.Message.Author.Id, TippableUsers, Convert.ToDecimal(Amount)))
+                    if (TippableUsers.Count > 0 && TrtlBotSharp.Tip(Context.Message.Author.Id, TippableUsers, Convert.ToDecimal(Amount), Context.Message))
                     {
                         // Send success react
                         await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipSuccessReact));

@@ -11,10 +11,6 @@ namespace TrtlBotSharp
         [Command("price")]
         public async Task PriceAsync([Remainder]string Remainder = "")
         {
-            // Ensure we are on an allowed market server
-            if (Context.Guild != null && TrtlBotSharp.marketDisallowedServers.Contains(Context.Guild.Id))
-                return;
-
             // Get current coin price
             JObject CoinPrice = Request.GET(TrtlBotSharp.marketEndpoint);
             if (CoinPrice.Count < 1)
@@ -43,16 +39,18 @@ namespace TrtlBotSharp
             Response.AddInlineField("BTC-USD", string.Format("{0:C} USD", (decimal)BTCPrice["last"]));
 
             // Send reply
-            await ReplyAsync("", false, Response);
+            if (Context.Guild != null && TrtlBotSharp.marketDisallowedServers.Contains(Context.Guild.Id))
+            {
+                try { await Context.Message.DeleteAsync(); }
+                catch { }
+                await Context.Message.Author.SendMessageAsync("", false, Response);
+            }
+            else await ReplyAsync("", false, Response);
         }
 
         [Command("mcap")]
         public async Task MarketCapAsync([Remainder]string Remainder = "")
         {
-            // Ensure we are on an allowed market server
-            if (Context.Guild != null && TrtlBotSharp.marketDisallowedServers.Contains(Context.Guild.Id))
-                return;
-
             // Get current coin price
             JObject CoinPrice = Request.GET(TrtlBotSharp.marketEndpoint);
             if (CoinPrice.Count < 1)
@@ -74,7 +72,13 @@ namespace TrtlBotSharp
                 (decimal)CoinPrice["price"] * (decimal)BTCPrice["last"] * TrtlBotSharp.GetSupply());
 
             // Send reply
-            await ReplyAsync(Response);
+            if (Context.Guild != null && TrtlBotSharp.marketDisallowedServers.Contains(Context.Guild.Id))
+            {
+                try { await Context.Message.DeleteAsync(); }
+                catch { }
+                await Context.Message.Author.SendMessageAsync(Response);
+            }
+            else await ReplyAsync(Response);
         }
     }
 }

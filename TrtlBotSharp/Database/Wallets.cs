@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Text;
+﻿using System.Data.SQLite;
 
 namespace TrtlBotSharp
 {
@@ -10,7 +7,7 @@ namespace TrtlBotSharp
         // Checks if a user exists in the database
         public static bool CheckUserExists(ulong UID)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT uid FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
 
@@ -23,7 +20,7 @@ namespace TrtlBotSharp
         // Checks if a user exists in the database
         public static bool CheckUserExists(string PaymentId)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT uid FROM users WHERE paymentid = @paymentid", Database);
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
 
@@ -36,7 +33,7 @@ namespace TrtlBotSharp
         // Checks if an address exists in the database
         public static bool CheckAddressExists(string Address)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT address FROM users WHERE address = @address", Database);
             Command.Parameters.AddWithValue("address", Address);
 
@@ -52,7 +49,7 @@ namespace TrtlBotSharp
             // Generate a new payment ID
             string PaymentId = GeneratePaymentId(Address);
 
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("INSERT INTO users (uid, address, paymentid) VALUES (@uid, @address, @paymentid)", Database);
             Command.Parameters.AddWithValue("uid", UID);
             Command.Parameters.AddWithValue("address", Address);
@@ -68,7 +65,7 @@ namespace TrtlBotSharp
         // Updates a wallet's address the database
         public static void UpdateWallet(ulong UID, string Address)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("UPDATE users SET address = @address WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
             Command.Parameters.AddWithValue("address", Address);
@@ -80,7 +77,7 @@ namespace TrtlBotSharp
         // Gets a wallet address from the database
         public static string GetAddress(ulong UID)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT address FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
 
@@ -96,7 +93,7 @@ namespace TrtlBotSharp
         // Gets a user's balance from the database
         public static decimal GetBalance(ulong UID)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT balance FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
 
@@ -112,7 +109,7 @@ namespace TrtlBotSharp
         // Gets a user's balance from the database
         public static decimal GetBalance(string PaymentId)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT balance FROM users WHERE paymentid = @paymentid", Database);
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
 
@@ -128,7 +125,7 @@ namespace TrtlBotSharp
         // Sets a user's balance in the database
         public static void SetBalance(ulong UID, decimal Balance)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("UPDATE users SET balance = @balance WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
             Command.Parameters.AddWithValue("balance", Balance);
@@ -140,7 +137,7 @@ namespace TrtlBotSharp
         // Sets a user's balance in the database
         public static void SetBalance(string PaymentId, decimal Balance)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("UPDATE users SET balance = @balance WHERE paymentid = @paymentid", Database);
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
             Command.Parameters.AddWithValue("balance", Balance);
@@ -152,7 +149,7 @@ namespace TrtlBotSharp
         // Gets a user's payment id
         public static string GetPaymentId(ulong UID)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT paymentid FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
 
@@ -168,7 +165,7 @@ namespace TrtlBotSharp
         // Gets a user's uid
         public static ulong GetUserId(string PaymentId)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT uid FROM users WHERE paymentid = @paymentid", Database);
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
 
@@ -184,7 +181,7 @@ namespace TrtlBotSharp
         // Gets a user's redirect preference from the database
         public static bool GetRedirect(ulong UID)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("SELECT redirect FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
 
@@ -200,57 +197,13 @@ namespace TrtlBotSharp
         // Sets a user's redirect preferemce in the database
         public static void SetRedirect(ulong UID, bool Redirect)
         {
-            // Create SQL command
+            // Create Sql command
             SQLiteCommand Command = new SQLiteCommand("UPDATE users SET redirect = @redirect WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", UID);
             Command.Parameters.AddWithValue("redirect", Redirect);
 
             // Execute command
             Command.ExecuteNonQuery();
-        }
-
-        // Adds a tip to user's stats
-        public static void TipStats(ulong Sender, ulong Recipient, decimal Amount)
-        {
-            // Update sender
-            SQLiteCommand Command = new SQLiteCommand("SELECT tipssent, coinssent FROM users WHERE uid = @uid", Database);
-            Command.Parameters.AddWithValue("uid", Sender);
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
-            {
-                if (Reader.Read())
-                {
-                    // Get current stats
-                    int TipsSent = Reader.GetInt32(0) + 1;
-                    decimal CoinsSent = Reader.GetDecimal(1) + Amount;
-
-                    // Update sender stats
-                    Command = new SQLiteCommand("UPDATE users SET tipssent = @tipssent, coinssent = @coinssent WHERE uid = @uid", Database);
-                    Command.Parameters.AddWithValue("uid", Sender);
-                    Command.Parameters.AddWithValue("tipssent", TipsSent);
-                    Command.Parameters.AddWithValue("coinssent", CoinsSent);
-                    Command.ExecuteNonQuery();
-                }
-            }
-
-            // Update recipient
-            Command = new SQLiteCommand("SELECT tipsrecv, coinsrecv FROM users WHERE uid = @uid", Database);
-            Command.Parameters.AddWithValue("uid", Recipient);
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
-            {
-                if (Reader.Read())
-                {
-                    // Get current stats
-                    int TipsRecv = Reader.GetInt32(0) + 1;
-                    decimal CoinsRecv = Reader.GetDecimal(1) + Amount;
-
-                    // Update sender stats
-                    Command = new SQLiteCommand("UPDATE users SET tipsrecv = @tipsrecv, coinsrecv = @coinsrecv WHERE uid = @uid", Database);
-                    Command.Parameters.AddWithValue("uid", Recipient);
-                    Command.Parameters.AddWithValue("tipsrecv", TipsRecv);
-                    Command.Parameters.AddWithValue("coinsrecv", CoinsRecv);
-                    Command.ExecuteNonQuery();
-                }
-            }
         }
     }
 }
