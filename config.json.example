@@ -1,8 +1,8 @@
-﻿{
+{
   "databaseFile": "TRTL.db",
   "logLevel": 2,
-  "botToken": "BOT_TOKEN",
-  "botPrefix": "+",
+  "botToken": "{BOT_TOKEN}",
+  "botPrefix": ".",
   "botMessageCache": 100,
   "coinName": "TurtleCoin",
   "coinSymbol": "TRTL",
@@ -14,21 +14,22 @@
   "tipSuccessReact": "💸",
   "tipFailedReact": "🆘",
   "tipLowBalanceReact": "❌",
-  "tipJoinReact": ":canti:",
+  "tipJoinReact": ":tip:",
   "tipCustomReacts": {
-    ":menks:": 1,
-    ":kev:": 10000
+    ":kev:": 99.5,
+    ":99:": 99,
+    "🍆": 1234.56
   },
   "faucetHost": "https://faucet.trtl.me/",
   "faucetEndpoint": "https://faucet.trtl.me/balance",
-  "faucetAddress": "TRTLv14M1Q9223QdWMmJyNeY8oMjXs5TGP9hDc3GJFsUVdXtaemn1mLKA25Hz9PLu89uvDafx9A93jW2i27E5Q3a7rn8P2fLuVA",
+  "faucetAddress": "TRTLv2oecJvd3299JPv78BMEqCeQAMtdoB85r1d5dfVFeGG7f83LB58i4gxsthLtWpD2QijVTmgbHhhC1QvJ2ABRea4VedLmqX8",
   "marketSource": "TradeOgre",
   "marketEndpoint": "https://tradeogre.com/api/v1/ticker/BTC-TRTL",
   "marketBTCEndpoint": "https://www.bitstamp.net/api/ticker/",
   "marketDisallowedServers": [
     388915017187328002
   ],
-  "daemonHost": "127.0.0.1",
+  "daemonHost": "public.turtlenode.io",
   "daemonPort": 11898,
   "walletHost": "127.0.0.1",
   "walletPort": 8070,
