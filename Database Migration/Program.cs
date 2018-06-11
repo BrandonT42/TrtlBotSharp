@@ -35,7 +35,7 @@ namespace DatabaseMigration
     class Program
     {
         // Declare DB files
-        static readonly string OldDB, NewDB;
+        static string OldDB, NewDB;
 
         // Cached data
         static Dictionary<ulong, User> Users;
