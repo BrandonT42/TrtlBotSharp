@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 namespace TrtlBotSharp
 {
@@ -9,11 +9,11 @@ namespace TrtlBotSharp
         public static bool CheckIfPending(string TransactionHash)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("SELECT tx FROM pendingtips WHERE tx = @tx", Database);
+            SqliteCommand Command = new SqliteCommand("SELECT tx FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
             // Execute command
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
                 if (Reader.HasRows) return true;
             return false;
         }
@@ -22,12 +22,12 @@ namespace TrtlBotSharp
         public static List<string> GetPendingPaymentIds(string TransactionHash)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("SELECT paymentid FROM pendingtips WHERE tx = @tx", Database);
+            SqliteCommand Command = new SqliteCommand("SELECT paymentid FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
             // Execute command
             List<string> PaymentIds = new List<string>();
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
                 while (Reader.Read())
                     PaymentIds.Add(Reader.GetString(0));
             return PaymentIds;
@@ -37,11 +37,11 @@ namespace TrtlBotSharp
         public static decimal GetPendingAmount(string TransactionHash)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("SELECT amount FROM pendingtips WHERE tx = @tx", Database);
+            SqliteCommand Command = new SqliteCommand("SELECT amount FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
             // Execute command
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
                 if (Reader.Read())
                     return Reader.GetDecimal(0);
             return 0;
@@ -51,7 +51,7 @@ namespace TrtlBotSharp
         public static void AddPending(string TransactionHash, string PaymentId, decimal Amount)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("INSERT INTO pendingtips (tx, paymentid, amount) VALUES (@tx, @paymentid, @amount)", Database);
+            SqliteCommand Command = new SqliteCommand("INSERT INTO pendingtips (tx, paymentid, amount) VALUES (@tx, @paymentid, @amount)", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
             Command.Parameters.AddWithValue("paymentid", PaymentId.ToUpper());
             Command.Parameters.AddWithValue("amount", Amount);
@@ -64,7 +64,7 @@ namespace TrtlBotSharp
         public static void RemovePending(string TransactionHash)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("DELETE FROM pendingtips WHERE tx = @tx", Database);
+            SqliteCommand Command = new SqliteCommand("DELETE FROM pendingtips WHERE tx = @tx", Database);
             Command.Parameters.AddWithValue("tx", TransactionHash.ToUpper());
 
             // Execute command

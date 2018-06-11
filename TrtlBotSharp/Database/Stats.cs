@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 namespace TrtlBotSharp
 {
@@ -9,7 +9,7 @@ namespace TrtlBotSharp
         public static void GlobalStats(string Type, ulong Server, ulong Channel, ulong Sender, decimal Amount, int Recipients)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("INSERT INTO tips (createdat, type, serverid, channelid, userid, amount, recipients, totalamount) " +
+            SqliteCommand Command = new SqliteCommand("INSERT INTO tips (createdat, type, serverid, channelid, userid, amount, recipients, totalamount) " +
                 "VALUES (@createdat, @type, @serverid, @channelid, @userid, @amount, @recipients, @totalamount)", Database);
             Command.Parameters.AddWithValue("createdat", (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
             Command.Parameters.AddWithValue("type", Type);
@@ -29,9 +29,9 @@ namespace TrtlBotSharp
         public static void UserStats(ulong Sender, ulong Recipient, decimal Amount)
         {
             // Update sender
-            SQLiteCommand Command = new SQLiteCommand("SELECT tipssent, coinssent FROM users WHERE uid = @uid", Database);
+            SqliteCommand Command = new SqliteCommand("SELECT tipssent, coinssent FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", Sender);
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
             {
                 if (Reader.Read())
                 {
@@ -40,7 +40,7 @@ namespace TrtlBotSharp
                     decimal CoinsSent = Reader.GetDecimal(1) + Amount;
 
                     // Update sender stats
-                    Command = new SQLiteCommand("UPDATE users SET tipssent = @tipssent, coinssent = @coinssent WHERE uid = @uid", Database);
+                    Command = new SqliteCommand("UPDATE users SET tipssent = @tipssent, coinssent = @coinssent WHERE uid = @uid", Database);
                     Command.Parameters.AddWithValue("uid", Sender);
                     Command.Parameters.AddWithValue("tipssent", TipsSent);
                     Command.Parameters.AddWithValue("coinssent", CoinsSent);
@@ -49,9 +49,9 @@ namespace TrtlBotSharp
             }
 
             // Update recipient
-            Command = new SQLiteCommand("SELECT tipsrecv, coinsrecv FROM users WHERE uid = @uid", Database);
+            Command = new SqliteCommand("SELECT tipsrecv, coinsrecv FROM users WHERE uid = @uid", Database);
             Command.Parameters.AddWithValue("uid", Recipient);
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
             {
                 if (Reader.Read())
                 {
@@ -60,7 +60,7 @@ namespace TrtlBotSharp
                     decimal CoinsRecv = Reader.GetDecimal(1) + Amount;
 
                     // Update sender stats
-                    Command = new SQLiteCommand("UPDATE users SET tipsrecv = @tipsrecv, coinsrecv = @coinsrecv WHERE uid = @uid", Database);
+                    Command = new SqliteCommand("UPDATE users SET tipsrecv = @tipsrecv, coinsrecv = @coinsrecv WHERE uid = @uid", Database);
                     Command.Parameters.AddWithValue("uid", Recipient);
                     Command.Parameters.AddWithValue("tipsrecv", TipsRecv);
                     Command.Parameters.AddWithValue("coinsrecv", CoinsRecv);

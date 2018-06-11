@@ -1,4 +1,4 @@
-﻿using System.Data.SQLite;
+﻿using Microsoft.Data.Sqlite;
 
 namespace TrtlBotSharp
 {
@@ -8,10 +8,10 @@ namespace TrtlBotSharp
         public static int GetSyncHeight()
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("SELECT height FROM sync", Database);
+            SqliteCommand Command = new SqliteCommand("SELECT height FROM sync", Database);
 
             // Execute command
-            using (SQLiteDataReader Reader = Command.ExecuteReader())
+            using (SqliteDataReader Reader = Command.ExecuteReader())
                 if (Reader.Read())
                     return Reader.GetInt32(0);
 
@@ -23,7 +23,7 @@ namespace TrtlBotSharp
         public static void SetSyncHeight(int Height)
         {
             // Create Sql command
-            SQLiteCommand Command = new SQLiteCommand("UPDATE sync SET height = @height", Database);
+            SqliteCommand Command = new SqliteCommand("UPDATE sync SET height = @height", Database);
             Command.Parameters.AddWithValue("height", Height);
 
             // Execute command
