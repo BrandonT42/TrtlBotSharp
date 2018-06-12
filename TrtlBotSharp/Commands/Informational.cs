@@ -91,6 +91,12 @@ namespace TrtlBotSharp
                 Response.AddField("Description:", string.Format("Sends a tip of a specified amount to one or more users *or* a specified {0} address", 
                     TrtlBotSharp.coinSymbol));
             }
+            //else if (Remainder.ToLower() == "tsunami")
+            //{
+            //   Response.Title += string.Format(" - {0}tsunami", TrtlBotSharp.botPrefix);
+            //    Response.AddField("Usage:", string.Format("{0}tsunami <Amount of {1}>", TrtlBotSharp.botPrefix, TrtlBotSharp.coinSymbol));
+            //    Response.AddField("Description:", "Sends a tip of a specified amount to all users with a non-zero balance");
+            //}
             else if (Remainder.ToLower() == "redirecttips")
             {
                 Response.Title += string.Format(" - {0}redirecttips", TrtlBotSharp.botPrefix);
@@ -137,6 +143,7 @@ namespace TrtlBotSharp
                 Output += "  withdraw\tWithdraws a specified amount from your tip jar into your registered wallet\n";
                 Output += "  balance\tGives your current tip jar balance\n";
                 Output += "  tip\tTips one or more users a specified amount\n";
+                //Output += "  tsunami\tTips all users a specified amount\n";
                 Output += "  redirecttips\tSets whether you'd like tips sent directly to your wallet or redirected back into your tip jar";
                 Output = string.Format("```" + TrtlBotSharp.Prettify(Output) + "```**Note:** You can use *{0}help <Name of Command>* for " +
                     "additional help with any command", TrtlBotSharp.botPrefix);

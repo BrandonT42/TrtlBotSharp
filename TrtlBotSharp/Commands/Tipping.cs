@@ -281,6 +281,48 @@ namespace TrtlBotSharp
             }
         }
 
+        [Command("tsunami")]
+        public async Task TsunamiAsync(string Amount, [Remainder]string Remainder = "")
+        {
+            List<ulong> TippableUsers = TrtlBotSharp.GetActiveUsers(Context.Message.Author.Id);
+            // Check if user exists in user table
+            if (!TrtlBotSharp.CheckUserExists(Context.Message.Author.Id))
+            {
+                await Context.Message.Author.SendMessageAsync(string.Format("You must register a wallet before you can tip! Use {0}help if you need any help.", TrtlBotSharp.botPrefix));
+                return;
+            }
+
+            // Check that amount is over the minimum fee
+            if (Convert.ToDecimal(Amount) < TrtlBotSharp.Minimum)//TrtlBotSharp.Fee)
+            {
+                await ReplyAsync(string.Format("Amount must be at least {0:N2} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
+                return;
+            }
+
+            // Check that user has enough balance for the tip
+            if (TrtlBotSharp.GetBalance(Context.Message.Author.Id) < Convert.ToDecimal(Amount) * TippableUsers.Count + TrtlBotSharp.tipFee)
+            {
+                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
+                    Convert.ToDecimal(Amount) * TippableUsers.Count + TrtlBotSharp.tipFee, TrtlBotSharp.coinSymbol));
+                await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipLowBalanceReact));
+            }
+            else if (TrtlBotSharp.GetBalance(Context.Message.Author.Id) < Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee)
+            {
+                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
+                    Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee, TrtlBotSharp.coinSymbol));
+                await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipLowBalanceReact));
+            }
+ 
+            foreach (List<ulong> subList in TippableUsers.SplitList(50))
+            {
+            }
+            // Send message
+            //await Context.Client.GetUser(Context.Message.Author.Id).SendMessageAsync("", false, ReplyEmbed);
+            // Send success react
+            //await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipSuccessReact));
+        }    
+
+
         [Command("tip")]
         public async Task TipAsync(string Amount, [Remainder]string Remainder = "")
         {

@@ -16,7 +16,7 @@ namespace TrtlBotSharp
         public static Dictionary<string, JObject> UnconfirmedTransactions = new Dictionary<string, JObject>();
 
         // Sends a tip to a list of users
-        public static bool Tip(ulong Sender, List<ulong> Recipients, decimal Amount, IMessage Message)
+        public static bool Tip(ulong Sender, List<ulong> Recipients, decimal Amount, IMessage Message, bool SendMessage = true)
         {
             // Create transfer list
             JArray Transfers = new JArray();
@@ -77,7 +77,7 @@ namespace TrtlBotSharp
                         _client.GetUser(Sender).Username, TransactionHash);
 
                     // Send message
-                    _client.GetUser(UID).SendMessageAsync("", false, ReplyEmbed);
+                    if (SendMessage) _client.GetUser(UID).SendMessageAsync("", false, ReplyEmbed);
                 }
 
                 // Begin building a message
@@ -90,8 +90,8 @@ namespace TrtlBotSharp
                         Amount, coinSymbol, Recipients.Count, Balance, TransactionHash);
 
                 // Send message
-                _client.GetUser(Sender).SendMessageAsync("", false, Response);
-
+                if (SendMessage) _client.GetUser(Sender).SendMessageAsync("", false, Response);
+ 
                 // Update global stats
                 ulong ServerId = 0;
                 ulong ChannelId = 0;
@@ -226,7 +226,7 @@ namespace TrtlBotSharp
                     while (SyncHeight < CurrentHeight)
                     {
                         // Log that syncing has started
-                        Log(1, "Wallet", "Scanning for deposits from height: {0:N20}", SyncHeight);
+                        Log(1, "Wallet", "Scanning for deposits from height: {0:N0}", SyncHeight);
 
                         // Set sync chunk size
                         int SyncSize = 1000;

@@ -29,7 +29,7 @@ namespace TrtlBotSharp
                 Difficulty = (decimal)Result["block_header"]["difficulty"];
 
             // Send reply
-            await ReplyAsync(string.Format("The current difficulty is **{0:N20}**", Difficulty));
+            await ReplyAsync(string.Format("The current difficulty is **{0:N0}**", Difficulty));
         }
 
         [Command("height")]
@@ -43,7 +43,7 @@ namespace TrtlBotSharp
 
 
             // Send reply
-            await ReplyAsync(string.Format("The current block height is **{0:N20}**", Height));
+            await ReplyAsync(string.Format("The current block height is **{0:N0}**", Height));
         }
 
         [Command("supply")]
