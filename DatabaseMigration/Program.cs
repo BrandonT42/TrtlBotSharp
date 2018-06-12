@@ -98,7 +98,7 @@ namespace DatabaseMigration
                         }
 
                         // Update console
-                        Console.WriteLine("Caching userid {0} with payment id {1}, address {2} and balance {3:N}",
+                        Console.WriteLine("Caching userid {0} with payment id {1}, address {2} and balance {3:N2}",
                             UserId, Users[UserId].PaymentId, Users[UserId].Address, Users[UserId].Balance);
                     }
                 }
@@ -124,7 +124,7 @@ namespace DatabaseMigration
                         Transactions.Add(Tx, new Transaction(PaymentId, Amount));
 
                         // Update console
-                        Console.WriteLine("Caching tx {0} with payment id {1} and amount {2:N}",
+                        Console.WriteLine("Caching tx {0} with payment id {1} and amount {2:N2}",
                             Tx, PaymentId, Amount);
                     }
                 }
@@ -177,7 +177,7 @@ namespace DatabaseMigration
                     Command.ExecuteNonQuery();
 
                     // Update console
-                    Console.WriteLine("Adding user to new db: userid {0} with payment id {1}, address {2} and balance {3:N}",
+                    Console.WriteLine("Adding user to new db: userid {0} with payment id {1}, address {2} and balance {3:N2}",
                         User.Key, User.Value.PaymentId, User.Value.Address, User.Value.Balance);
                 }
 
@@ -195,7 +195,7 @@ namespace DatabaseMigration
                     Command.ExecuteNonQuery();
 
                     // Update console
-                    Console.WriteLine("Adding tx to new db: tx {0} with payment id {1}, amount {2:N}",
+                    Console.WriteLine("Adding tx to new db: tx {0} with payment id {1}, amount {2:N2}",
                         Transaction.Key, Transaction.Value.PaymentId, Transaction.Value.Amount);
                 }
             }

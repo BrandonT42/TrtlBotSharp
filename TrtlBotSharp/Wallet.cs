@@ -69,11 +69,11 @@ namespace TrtlBotSharp
                         AddPending(TransactionHash, GetPaymentId(UID), Amount);
 
                         // Set response message
-                        ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}, since you are redirecting tips back to " +
+                        ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N2}** {1} from {2}, since you are redirecting tips back to " +
                             "your tip jar, this will come through as a deposit once confirmed.\nTX: **{3}**", Amount, coinSymbol,
                             _client.GetUser(Sender).Username, TransactionHash);
                     }
-                    else ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N}** {1} from {2}!\nTX: **{3}**", Amount, coinSymbol,
+                    else ReplyEmbed.Description = string.Format("You recieved a tip of **{0:N2}** {1} from {2}!\nTX: **{3}**", Amount, coinSymbol,
                         _client.GetUser(Sender).Username, TransactionHash);
 
                     // Send message
@@ -84,9 +84,9 @@ namespace TrtlBotSharp
                 var Response = new EmbedBuilder();
                 Response.WithTitle("Tip sent!");
                 if (Recipients.Count == 1)
-                    Response.Description = string.Format("You sent a tip of **{0:N}** {1} to 1 user\nNew balance: **{2:N}** {1}\nTX: **{3}**",
+                    Response.Description = string.Format("You sent a tip of **{0:N2}** {1} to 1 user\nNew balance: **{2:N2}** {1}\nTX: **{3}**",
                         Amount, coinSymbol, Balance, TransactionHash);
-                else Response.Description = string.Format("You sent a tip of **{0:N}** {1} to {2} users\nNew balance: **{3:N}** {1}\nTX: **{4}**",
+                else Response.Description = string.Format("You sent a tip of **{0:N2}** {1} to {2} users\nNew balance: **{3:N2}** {1}\nTX: **{4}**",
                         Amount, coinSymbol, Recipients.Count, Balance, TransactionHash);
 
                 // Send message
@@ -138,13 +138,13 @@ namespace TrtlBotSharp
                 if (GetAddress(Sender) == Recipient)
                 {
                     Response.WithTitle("Withdrawal sent!");
-                    Response.Description = string.Format("You withdrew **{0:N}** {1} to {2}\nNew balance: **{3:N}** {1}\nTX: **{4}**",
+                    Response.Description = string.Format("You withdrew **{0:N2}** {1} to {2}\nNew balance: **{3:N2}** {1}\nTX: **{4}**",
                         Amount, coinSymbol, Recipient, Balance, TransactionHash);
                 }
                 else
                 {
                     Response.WithTitle("Tip sent!");
-                    Response.Description = string.Format("You sent a tip of **{0:N}** {1} to {2}\nNew balance: **{3:N}** {1}\nTX: **{4}**",
+                    Response.Description = string.Format("You sent a tip of **{0:N2}** {1} to {2}\nNew balance: **{3:N2}** {1}\nTX: **{4}**",
                         Amount, coinSymbol, Recipient, Balance, TransactionHash);
                 }
 
@@ -206,7 +206,7 @@ namespace TrtlBotSharp
 
             // Get last sync height
             int SyncHeight = GetSyncHeight();
-            Log(0, "Wallet", "Starting sync, {0:N0} blocks behind", ((int)Result["blockCount"] - SyncHeight));
+            Log(0, "Wallet", "Starting sync, {0:N2} blocks behind", ((int)Result["blockCount"] - SyncHeight));
 
             // Loop while connected
             while (Result.Count > 0 && !Result.ContainsKey("error"))
@@ -226,7 +226,7 @@ namespace TrtlBotSharp
                     while (SyncHeight < CurrentHeight)
                     {
                         // Log that syncing has started
-                        Log(1, "Wallet", "Scanning for deposits from height: {0:N0}", SyncHeight);
+                        Log(1, "Wallet", "Scanning for deposits from height: {0:N2}", SyncHeight);
 
                         // Set sync chunk size
                         int SyncSize = 1000;
@@ -340,7 +340,7 @@ namespace TrtlBotSharp
                                 // Begin building a message
                                 var Response = new EmbedBuilder();
                                 Response.WithTitle("Deposit recieved!");
-                                Response.Description = string.Format("Your deposit of **{0:N}** {1} has now been credited.\nNew balance: **{2:N}** {1}\nTX: **{3}**",
+                                Response.Description = string.Format("Your deposit of **{0:N2}** {1} has now been credited.\nNew balance: **{2:N2}** {1}\nTX: **{3}**",
                                     Difference, coinSymbol, Balance, ConfirmedTransaction.Key);
 
                                 // Send message
@@ -383,7 +383,7 @@ namespace TrtlBotSharp
                                 // Begin building a message
                                 var Response = new EmbedBuilder();
                                 Response.WithTitle("Tip processed!");
-                                Response.Description = string.Format("A tip of **{0:N}** {1} that was sent to you has now been credited.\nNew balance: **{2:N}** {1}\nTX: **{3}**",
+                                Response.Description = string.Format("A tip of **{0:N2}** {1} that was sent to you has now been credited.\nNew balance: **{2:N2}** {1}\nTX: **{3}**",
                                     Pending, coinSymbol, Balance + Pending, ConfirmedTransaction.Key);
 
                                 // Send message

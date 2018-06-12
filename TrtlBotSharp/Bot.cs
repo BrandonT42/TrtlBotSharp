@@ -17,10 +17,10 @@ namespace TrtlBotSharp
         {
             // Begin bot process in its own thread
             RunBotAsync();
+            while(true)
+            {
 
-            // Wait for keypress to exit
-            Console.ReadKey();
-
+            }
             // Close the database connection
             CloseDatabase();
         }
@@ -176,7 +176,7 @@ namespace TrtlBotSharp
                 // Check that user has enough balance for the tip
                 if (GetBalance(Reaction.UserId) < Convert.ToDecimal(Amount) * TippableUsers.Count + tipFee)
                 {
-                    await Reaction.User.Value.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
+                    await Reaction.User.Value.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
                         Convert.ToDecimal(Amount) * TippableUsers.Count + tipFee, coinSymbol));
                     await Message.AddReactionAsync(new Emoji(tipLowBalanceReact));
                     return;
@@ -229,7 +229,7 @@ namespace TrtlBotSharp
                 // Check that user has enough balance for the tip
                 if (GetBalance(Reaction.UserId) < Amount + tipFee)
                 {
-                    await Reaction.User.Value.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
+                    await Reaction.User.Value.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
                         Amount + tipFee, coinSymbol));
                     await Message.AddReactionAsync(new Emoji(tipLowBalanceReact));
                 }

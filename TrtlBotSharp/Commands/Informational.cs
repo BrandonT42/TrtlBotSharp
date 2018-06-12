@@ -161,7 +161,7 @@ namespace TrtlBotSharp
 
             // Begin building a response
             var Response = new EmbedBuilder();
-            Response.WithTitle(string.Format("This faucet has {0:N} {1} left", (decimal)FaucetBalance["available"], TrtlBotSharp.coinSymbol));
+            Response.WithTitle(string.Format("This faucet has {0:N2} {1} left", (decimal)FaucetBalance["available"], TrtlBotSharp.coinSymbol));
             Response.WithUrl(TrtlBotSharp.faucetHost);
             Response.Description = "```Donations:\n" + TrtlBotSharp.faucetAddress + "```\n";
 
