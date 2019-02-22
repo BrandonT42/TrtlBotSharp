@@ -37,16 +37,28 @@ namespace DatabaseMigration
         // Declare DB files
         static string OldDB, NewDB;
 
+        // Decimal places
+        static int decimalPlaces;
+
         // Cached data
         static Dictionary<ulong, User> Users;
         static Dictionary<string, Transaction> Transactions;
 
+        // Floors to decimal place
+        public static decimal Floor(decimal Input)
+        {
+            var r = Convert.ToDecimal(Math.Pow(10, decimalPlaces));
+            return Math.Floor(Input * r) / r;
+        }
+
+        // Entry point
         static void Main(string[] args)
         {
             // Get arguments
-            if (args.Length < 2) return;
+            if (args.Length < 3) return;
             OldDB = args[0];
             NewDB = args[1];
+            decimalPlaces = int.Parse(args[2]);
 
             // Create user cache
             Users = new Dictionary<ulong, User>();
@@ -92,7 +104,7 @@ namespace DatabaseMigration
                                 Users[UserId].PaymentId = ReaderTwo.GetString(0).ToUpper();
 
                                 // Get balance
-                                try { Users[UserId].Balance = Convert.ToDecimal(ReaderTwo.GetInt64(1)) / 100; }
+                                try { Users[UserId].Balance = Floor(Convert.ToDecimal(ReaderTwo.GetInt64(1)) / (10 * decimalPlaces)); }
                                 catch { Users[UserId].Balance = 0; }
                             }
                         }
@@ -117,7 +129,7 @@ namespace DatabaseMigration
                         try { PaymentId = ReaderOne.GetString(1).ToUpper(); }
                         catch { }
                         decimal Amount = 0;
-                        try { Amount = Convert.ToDecimal(ReaderOne.GetInt64(2)) / 100; }
+                        try { Amount = Floor(Convert.ToDecimal(ReaderOne.GetInt64(2)) / (10 * decimalPlaces)); }
                         catch { }
 
                         // Create transaction object in cache
