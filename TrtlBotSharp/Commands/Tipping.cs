@@ -238,14 +238,14 @@ namespace TrtlBotSharp
             // Check that amount is over the minimum fee
             else if (Convert.ToDecimal(Amount) < TrtlBotSharp.Minimum)//TrtlBotSharp.Fee)
             {
-                await ReplyAsync(string.Format("Amount must be at least {0:N} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
+                await ReplyAsync(string.Format("Amount must be at least {0:N2} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
                 return;
             }
 
             // Check if user has enough balance
             else if (TrtlBotSharp.GetBalance(Context.Message.Author.Id) < Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee)
             {
-                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
+                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
                     Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee, TrtlBotSharp.coinSymbol));
                 await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipLowBalanceReact));
             }
@@ -277,7 +277,7 @@ namespace TrtlBotSharp
                 decimal Balance = TrtlBotSharp.GetBalance(Context.Message.Author.Id);
 
                 // Send reply
-                await Context.Message.Author.SendMessageAsync(string.Format("You have **{0:N}** {1} in your tip jar", Balance, TrtlBotSharp.coinSymbol));
+                await Context.Message.Author.SendMessageAsync(string.Format("You have **{0:N2}** {1} in your tip jar", Balance, TrtlBotSharp.coinSymbol));
             }
         }
 
@@ -294,7 +294,7 @@ namespace TrtlBotSharp
             // Check that amount is over the minimum fee
             if (Convert.ToDecimal(Amount) < TrtlBotSharp.Minimum)//TrtlBotSharp.Fee)
             {
-                await ReplyAsync(string.Format("Amount must be at least {0:N} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
+                await ReplyAsync(string.Format("Amount must be at least {0:N2} {1}", TrtlBotSharp.Minimum/*Fee*/, TrtlBotSharp.coinSymbol));
                 return;
             }
 
@@ -323,13 +323,13 @@ namespace TrtlBotSharp
             // Check that user has enough balance for the tip
             if (Address == "" && TrtlBotSharp.GetBalance(Context.Message.Author.Id) < Convert.ToDecimal(Amount) * TippableUsers.Count + TrtlBotSharp.tipFee)
             {
-                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
+                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
                     Convert.ToDecimal(Amount) * TippableUsers.Count + TrtlBotSharp.tipFee, TrtlBotSharp.coinSymbol));
                 await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipLowBalanceReact));
             }
             else if (TrtlBotSharp.GetBalance(Context.Message.Author.Id) < Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee)
             {
-                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N}** {1}",
+                await Context.Message.Author.SendMessageAsync(string.Format("Your balance is too low! Amount + Fee = **{0:N2}** {1}",
                     Convert.ToDecimal(Amount) + TrtlBotSharp.tipFee, TrtlBotSharp.coinSymbol));
                 await Context.Message.AddReactionAsync(new Emoji(TrtlBotSharp.tipLowBalanceReact));
             }

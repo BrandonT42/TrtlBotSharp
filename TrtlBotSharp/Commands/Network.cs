@@ -53,7 +53,7 @@ namespace TrtlBotSharp
             decimal Supply = TrtlBotSharp.GetSupply();
 
             // Send reply
-            await ReplyAsync(string.Format("The current circulating supply is **{0:N}** {1}", Supply, TrtlBotSharp.coinSymbol));
+            await ReplyAsync(string.Format("The current circulating supply is **{0:N2}** {1}", Supply, TrtlBotSharp.coinSymbol));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace TrtlBotSharp
             Response.AddInlineField("Current", string.Format("{0} sats", Math.Round((decimal)CoinPrice["price"] * 100000000)));
             Response.AddInlineField("High", string.Format("{0} sats", Math.Round((decimal)CoinPrice["high"] * 100000000)));
             Response.AddInlineField(TrtlBotSharp.coinSymbol + "-USD", string.Format("${0:N5} USD", (decimal)CoinPrice["price"] * (decimal)BTCPrice["last"]));
-            Response.AddInlineField("Volume", string.Format("{0:N} BTC", (decimal)CoinPrice["volume"]));
+            Response.AddInlineField("Volume", string.Format("{0:N2} BTC", (decimal)CoinPrice["volume"]));
             Response.AddInlineField("BTC-USD", string.Format("{0:C} USD", (decimal)BTCPrice["last"]));
 
             // Send reply
